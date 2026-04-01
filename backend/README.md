@@ -27,3 +27,24 @@ JWT_SECRET=replace_me
 OPENAI_API_KEY=your_openai_api_key
 CORS_ORIGIN=http://localhost:3000
 ```
+
+## Added API endpoints
+
+- Goal onboarding
+  - `POST /goals/init`
+  - `POST /ai/goal-questions`
+  - `POST /goals/complete`
+- AI content drafting
+  - `POST /ai/smart-content`
+- Profile analysis
+  - `POST /ai/profile-analyze`
+- Engagement suggestions
+  - `POST /ai/engagement-suggestions`
+- Dashboard overview
+  - `GET /dashboard/overview`
+- Target detail and engagement logging
+  - `GET /targets/:id`
+  - `GET /targets/:id/engagement`
+  - `POST /targets/:id/log`
+
+All routes above require Bearer token auth.
