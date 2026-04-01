@@ -1,4 +1,4 @@
-import '@/app/globals.css';
+import '@/styles/globals.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
 
