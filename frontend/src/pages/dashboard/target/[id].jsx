@@ -13,11 +13,11 @@ export default function TargetDetailPage() {
     enabled: Boolean(targetId),
   });
 
-  if (targetQuery.isLoading) {
+  if (!router.isReady || !targetId || targetQuery.isLoading) {
     return <main className="mx-auto mt-16 max-w-4xl px-6">Loading target profile…</main>;
   }
 
-  if (targetQuery.isError) {
+  if (targetQuery.isError || !targetQuery.data) {
     return (
       <main className="mx-auto mt-16 max-w-4xl px-6">
         <p>Could not load target profile.</p>
