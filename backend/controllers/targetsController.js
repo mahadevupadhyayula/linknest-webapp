@@ -28,18 +28,17 @@ async function getTargetEngagement(req, res) {
 
 async function logTargetEngagement(req, res) {
   try {
-    const { channel, note, sentiment, nextAction, occurredAt, relevanceScore } = req.body;
-    if (!channel) {
-      return res.status(400).json({ message: 'channel is required' });
+    const { interaction_type, channel, note, sentiment, occurred_at } = req.body;
+    if (!channel || !interaction_type) {
+      return res.status(400).json({ message: 'channel and interaction_type are required' });
     }
 
     const target = await targetsService.logTargetEngagement(req.user._id, req.params.id, {
+      interaction_type,
       channel,
       note,
       sentiment,
-      nextAction,
-      occurredAt,
-      relevanceScore,
+      occurred_at,
     });
 
     if (!target) {
@@ -52,8 +51,40 @@ async function logTargetEngagement(req, res) {
   }
 }
 
+async function updateTargetEngagement(req, res) {
+  try {
+    const { interaction_type, channel, note, sentiment, occurred_at } = req.body;
+
+    const result = await targetsService.updateTargetEngagement(
+      req.user._id,
+      req.params.id,
+      req.params.logId,
+      {
+        interaction_type,
+        channel,
+        note,
+        sentiment,
+        occurred_at,
+      }
+    );
+
+    if (!result) {
+      return res.status(404).json({ message: 'Target not found' });
+    }
+
+    if (!result.engagementLog) {
+      return res.status(404).json({ message: 'Engagement log not found' });
+    }
+
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(500).json({ message: 'Failed to update engagement', error: error.message });
+  }
+}
+
 module.exports = {
   getTarget,
   getTargetEngagement,
   logTargetEngagement,
+  updateTargetEngagement,
 };

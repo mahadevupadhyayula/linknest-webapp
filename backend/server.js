@@ -1,12 +1,12 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const mongoose = require('mongoose');
 const authRoutes = require('./routes/auth');
 const goalRoutes = require('./routes/goals');
 const aiRoutes = require('./routes/ai');
 const dashboardRoutes = require('./routes/dashboard');
 const targetRoutes = require('./routes/targets');
+const { connectToDatabase, getDatabaseStatus, runDatabaseHealthcheck } = require('./config/database');
 
 dotenv.config();
 
@@ -27,18 +27,19 @@ app.use('/ai', aiRoutes);
 app.use('/dashboard', dashboardRoutes);
 app.use('/targets', targetRoutes);
 
-app.get('/health', (_req, res) => {
-  res.json({ status: 'ok' });
+app.get('/health', async (_req, res) => {
+  try {
+    await runDatabaseHealthcheck();
+    return res.json({ status: 'ok', db: getDatabaseStatus() });
+  } catch (error) {
+    return res.status(503).json({ status: 'degraded', db: getDatabaseStatus(), error: error.message });
+  }
 });
 
 async function startServer() {
   try {
-    if (process.env.MONGODB_URI) {
-      await mongoose.connect(process.env.MONGODB_URI);
-      console.log('Connected to MongoDB');
-    } else {
-      console.warn('MONGODB_URI not set, backend may fail for DB-backed routes');
-    }
+    await connectToDatabase();
+    console.log('Connected to MongoDB');
 
     app.listen(PORT, () => {
       console.log(`Backend listening on port ${PORT}`);

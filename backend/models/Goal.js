@@ -19,7 +19,7 @@ const goalSchema = new mongoose.Schema(
     ],
     completedAt: { type: Date },
   },
-  { timestamps: true }
+  { timestamps: true, collection: 'goals' }
 );
 
 module.exports = mongoose.model('Goal', goalSchema);
