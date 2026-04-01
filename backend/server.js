@@ -1,31 +1,11 @@
-const express = require('express');
-const cors = require('cors');
 const dotenv = require('dotenv');
-const authRoutes = require('./routes/auth');
-const goalRoutes = require('./routes/goals');
-const aiRoutes = require('./routes/ai');
-const dashboardRoutes = require('./routes/dashboard');
-const targetRoutes = require('./routes/targets');
 const { connectToDatabase, getDatabaseStatus, runDatabaseHealthcheck } = require('./config/database');
+const { createApp } = require('./app');
 
 dotenv.config();
 
-const app = express();
+const app = createApp();
 const PORT = process.env.PORT || 5000;
-
-app.use(
-  cors({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
-    credentials: true,
-  })
-);
-app.use(express.json());
-
-app.use('/auth', authRoutes);
-app.use('/goals', goalRoutes);
-app.use('/ai', aiRoutes);
-app.use('/dashboard', dashboardRoutes);
-app.use('/targets', targetRoutes);
 
 app.get('/health', async (_req, res) => {
   try {

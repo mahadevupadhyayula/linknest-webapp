@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "dev": "node server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "jest --runInBand"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
@@ -15,5 +16,9 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.7.3",
     "openai": "^4.68.1"
+  },
+  "devDependencies": {
+    "jest": "^30.0.0",
+    "supertest": "^7.1.1"
   }
 }
