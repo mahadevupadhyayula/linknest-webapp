@@ -1,5 +1,18 @@
 const goalsService = require('../services/goalsService');
 const aiService = require('../services/aiService');
+const AIOutput = require('../models/AIOutput');
+
+async function saveAIOutput(userId, outputType, reqBody, outputPayload) {
+  await AIOutput.create({
+    user_id: userId,
+    output_type: outputType,
+    prompt: JSON.stringify(reqBody),
+    input_payload: reqBody,
+    output_payload: outputPayload,
+    goal_id: reqBody.goalId,
+    target_profile_id: reqBody.targetProfileId,
+  });
+}
 
 async function goalQuestions(req, res) {
   try {
@@ -11,6 +24,8 @@ async function goalQuestions(req, res) {
 
     const goal = { _id: goalId, title: userGoal || 'Goal' };
     const questions = goalsService.generateGoalQuestions(goal, userGoal);
+
+    await saveAIOutput(req.user._id, 'goal_questions', req.body, { questions });
 
     return res.status(200).json({ questions });
   } catch (error) {
@@ -34,6 +49,8 @@ async function smartContent(req, res) {
       constraints,
     });
 
+    await saveAIOutput(req.user._id, 'smart_content', req.body, draft);
+
     return res.status(200).json(draft);
   } catch (error) {
     return res.status(500).json({ message: 'Failed to draft AI content', error: error.message });
@@ -43,6 +60,7 @@ async function smartContent(req, res) {
 async function profileAnalyze(req, res) {
   try {
     const analysis = aiService.analyzeProfile(req.body);
+    await saveAIOutput(req.user._id, 'profile_analyze', req.body, analysis);
     return res.status(200).json(analysis);
   } catch (error) {
     return res.status(500).json({ message: 'Failed to analyze profile', error: error.message });
@@ -52,6 +70,7 @@ async function profileAnalyze(req, res) {
 async function engagementSuggestions(req, res) {
   try {
     const suggestions = aiService.generateEngagementSuggestions(req.body);
+    await saveAIOutput(req.user._id, 'engagement_suggestions', req.body, suggestions);
     return res.status(200).json(suggestions);
   } catch (error) {
     return res.status(500).json({ message: 'Failed to generate engagement suggestions', error: error.message });
